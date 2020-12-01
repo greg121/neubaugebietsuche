@@ -87,4 +87,10 @@ def get_all_gemeinden():
     for f in fetched:
         result.extend(f)
     return result
+
+for gemeinde in get_all_gemeinden():
+    try:
+        find_all_links(find_website(gemeinde))
+    except Exception as e:
+        write_to_db(gemeinde, 'ERROR in Main ',str(e), datetime.datetime.now())  
                
