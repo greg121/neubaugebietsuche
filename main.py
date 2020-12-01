@@ -81,7 +81,7 @@ def find_all_links(url):
 def get_all_gemeinden():
     conn = sqlite3.connect('gemeinde.db')
     c = conn.cursor()
-    c.execute('SELECT name FROM masterdata where name >= "Reute"')
+    c.execute('SELECT name FROM masterdata')
     fetched = c.fetchall()
     result = []
     for f in fetched:
