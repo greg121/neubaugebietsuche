@@ -4,8 +4,8 @@ import sqlite3
 import re
 import datetime
 from googlesearch import search
-from ipywidgets import IntProgress
-from IPython.display import display
+#from ipywidgets import IntProgress #for use in jupyter notebook
+#from IPython.display import display
 import time
 import datetime
 
@@ -60,23 +60,20 @@ def find_all_links(url):
     
     count = 1
     num_links = len(BeautifulSoup(response, 'html.parser', parse_only=SoupStrainer('a')))
-    #print(str(count) + ' von ' + str(num_links) + ': ' + https_url + ' was scraped')
-    f = IntProgress(min=0, max=num_links)
+    #f = IntProgress(min=0, max=num_links) #for use in jupyter notebook
     print(url)
-    display(f)
+    #display(f) #for use in jupyter notebook
     if (not data_point_exists(https_url, https_url)):
         write_to_db(https_url, https_url, remove_html(response), datetime.datetime.now())
 
     for link in BeautifulSoup(response, 'html.parser', parse_only=SoupStrainer('a')):
-        count = count + 1
-        f.value += 1
+        #f.value += 1 #for use in jupyter notebook
         if (link.has_attr('href') and link['href'] != '' and is_internal_link(url, link['href']) != -1):
             if (not data_point_exists(https_url, is_internal_link(url, link['href']))):
                 internal_link = is_internal_link(url, link['href'])
                 if (internal_link != -1):
                     status2, response2 =  http.request(internal_link) 
                     write_to_db(https_url, internal_link, remove_html(response2), datetime.datetime.now())
-                    #print(str(count) + ' von ' + str(num_links) +  ': ' + internal_link + ' was scraped')
 
 def get_all_gemeinden():
     conn = sqlite3.connect('gemeinde.db')
