@@ -7,6 +7,6 @@
 
 # TODO
 
-- Erweiterung der Stammdaten um Bundesland, Landkreis, Einwohner (am Besten über Wikipedia)
+- Erweiterung der Stammdaten um ~~Bundesland, Landkreis,~~ Einwohner (am Besten über Wikipedia)
 - Erstellen eines Modells zur Erkennung von Neubaugebieten im Text der Webseite
 - Erweiterung der Daten um andere Bundesländer
