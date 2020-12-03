@@ -8,21 +8,13 @@ import time
 import datetime
 
 def find_website(gemeinde):
-    l = []
     query = 'homepage gemeinde ' + gemeinde
     name = search(query)[0]  
     start = name.find('://')
     end = name.find('.de/')
     if (end == -1):
-        end = name.find('.org/')+1
-    if (end == -1):
-        end = name.find('.com/')+1
-    if (end == -1):
-        end = name.find('.info/')+2
-    if (end == -1):
-        end = name.find('.eu/')
-    result = name[start+3:end+3]
-    
+        end = name.find('.org')+1
+    result = name[start+3:end+3]    
     return result
 
 def get_gemeinde(character):
@@ -81,10 +73,41 @@ def data_point_exists(name):
         return True
     else:
         return False
+    
+def get_landkreis(gemeinde):
+    query = 'wikipedia gemeinde deutsch ' + gemeinde
+    url = search(query)[0]
+    http = httplib2.Http()
+    status, response = http.request(url)
+    response = remove_html(response)
+    start = repr(response).find('Landkreis:')+14
+    end = repr(response)[start:].find('\\n\\n\\n')
+    return repr(response)[start:start+end]
+
+def get_all_gemeinden():
+    conn = sqlite3.connect('gemeinde.db')
+    c = conn.cursor()
+    c.execute('SELECT name FROM masterdata')
+    fetched = c.fetchall()
+    result = []
+    for f in fetched:
+        result.extend(f)
+    return result
+
+def update_db_landkreis():
+    for gemeinde in get_all_gemeinden():
+        landkreis = get_landkreis(gemeinde)
+        conn = sqlite3.connect('gemeinde.db')
+        c = conn.cursor()
+        c.execute('update masterdata set landkreis = ? where name = ?;' , [landkreis, gemeinde])
+        conn.commit()
+        print(gemeinde, landkreis)
         
-for gemeinde in get_gemeinden():
-    if (not data_point_exists(gemeinde)):
-        write_to_db(gemeinde, find_website(gemeinde), datetime.datetime.now())
-        print(gemeinde, "added")
-    else:
-        print(gemeinde, "already in database")
+
+def run():
+    for gemeinde in get_gemeinden():
+        if (not data_point_exists(gemeinde)):
+            write_to_db(gemeinde, find_website(gemeinde), datetime.datetime.now())
+            print(gemeinde, "added")
+        else:
+            print(gemeinde, "already in database")
